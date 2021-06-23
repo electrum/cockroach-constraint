@@ -27,7 +27,7 @@ public class TestCockroachConstraint
     public void testConstraintCockroach()
             throws SQLException
     {
-        testConstraint(new CockroachContainer("cockroachdb/cockroach:v20.2.7"));
+        testConstraint(new CockroachContainer("cockroachdb/cockroach:v21.1.3"));
     }
 
     private static void testConstraint(JdbcDatabaseContainer<?> database)
@@ -45,7 +45,7 @@ public class TestCockroachConstraint
             try (Statement statement = connection.createStatement()) {
                 assertThatThrownBy(() -> statement.execute("INSERT INTO items VALUES (123, 'Grape')"))
                         .isInstanceOfSatisfying(PSQLException.class, e ->
-                                assertThat(e.getServerErrorMessage().getConstraint()).isEqualTo("items_pkey"));
+                                assertThat(e.getServerErrorMessage().getConstraint()).isIn("primary", "items_pkey"));
             }
 
             try (Statement statement = connection.createStatement()) {
