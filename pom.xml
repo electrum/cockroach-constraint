@@ -57,6 +57,13 @@
             <artifactId>cockroachdb</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.31</version>
+            <scope>teest</scope>
+        </dependency>
     </dependencies>
 
     <build>
