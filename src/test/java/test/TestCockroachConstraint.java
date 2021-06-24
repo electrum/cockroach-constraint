@@ -13,6 +13,7 @@ import java.sql.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.postgresql.util.PSQLState.UNIQUE_VIOLATION;
 
 public class TestCockroachConstraint
 {
@@ -45,6 +46,7 @@ public class TestCockroachConstraint
             try (Statement statement = connection.createStatement()) {
                 assertThatThrownBy(() -> statement.execute("INSERT INTO items VALUES (123, 'Grape')"))
                         .isInstanceOfSatisfying(PSQLException.class, e -> {
+                            assertThat(e.getSQLState()).isEqualTo(UNIQUE_VIOLATION);
                             assertThat(e.getServerErrorMessage()).isNotNull();
                             assertThat(e.getServerErrorMessage().getConstraint()).isEqualTo(cockroach ? "primary" : "items_pkey");
                             assertThat(e.getServerErrorMessage().getDetail()).isEqualTo("Key (item_id)=(123) already exists.");
@@ -54,6 +56,7 @@ public class TestCockroachConstraint
             try (Statement statement = connection.createStatement()) {
                 assertThatThrownBy(() -> statement.execute("INSERT INTO items VALUES (789, 'Apple')"))
                         .isInstanceOfSatisfying(PSQLException.class, e -> {
+                            assertThat(e.getSQLState()).isEqualTo(UNIQUE_VIOLATION);
                             assertThat(e.getServerErrorMessage()).isNotNull();
                             assertThat(e.getServerErrorMessage().getConstraint()).isEqualTo("items_name_key");
                             assertThat(e.getServerErrorMessage().getDetail()).isEqualTo(
@@ -64,6 +67,7 @@ public class TestCockroachConstraint
             try (Statement statement = connection.createStatement()) {
                 assertThatThrownBy(() -> statement.execute("INSERT INTO items VALUES (789, 'Grape', 3, 4)"))
                         .isInstanceOfSatisfying(PSQLException.class, e -> {
+                            assertThat(e.getSQLState()).isEqualTo(UNIQUE_VIOLATION);
                             assertThat(e.getServerErrorMessage()).isNotNull();
                             assertThat(e.getServerErrorMessage().getConstraint()).isEqualTo("items_a_b_key");
                             assertThat(e.getServerErrorMessage().getDetail()).isEqualTo(
